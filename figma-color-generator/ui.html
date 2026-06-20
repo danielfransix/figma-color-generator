@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap" rel="stylesheet">
+<style>
+
+/* ── Reset & base ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Cal Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  background: #1e1e1e;
+  color: #e0e0e0;
+  padding: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+.header {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 18px;
+  letter-spacing: -0.01em;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* ── Section spacing ─────────────────────────────────────────────────────── */
+.section {
+  margin-bottom: 16px;
+}
+
+/* ── Select ──────────────────────────────────────────────────────────────── */
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid #666;
+  pointer-events: none;
+}
+
+select {
+  width: 100%;
+  background: #2d2d2d;
+  border: 1px solid #3a3a3a;
+  color: #e0e0e0;
+  border-radius: 7px;
+  padding: 8px 32px 8px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+select:focus { border-color: #7b61ff; }
+
+select option { background: #2d2d2d; }
+
+/* ── Text inputs ─────────────────────────────────────────────────────────── */
+input[type="text"] {
+  background: #2d2d2d;
+  border: 1px solid #3a3a3a;
+  color: #e0e0e0;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+input[type="text"]:focus { border-color: #7b61ff; }
+input[type="text"].error  { border-color: #ff5a5a; }
+input[type="text"]::placeholder { color: #555; }
+
+/* ── New collection name input ───────────────────────────────────────────── */
+#new-collection-wrap {
+  margin-top: 8px;
+  display: none;
+}
+
+/* ── Entry rows ──────────────────────────────────────────────────────────── */
+.entries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.entry-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 9px 10px;
+}
+
+/* ── Color swatch + hidden color picker ──────────────────────────────────── */
+.color-preview {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  background: #3a3a3a;
+}
+
+.color-preview input[type="color"] {
+  position: absolute;
+  inset: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+/* ── Hex input ───────────────────────────────────────────────────────────── */
+.hex-input {
+  width: 90px !important;
+  flex-shrink: 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* ── Folder name input ───────────────────────────────────────────────────── */
+.name-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Remove button ───────────────────────────────────────────────────────── */
+.remove-btn {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-btn:hover {
+  color: #ff5a5a;
+  background: rgba(255, 90, 90, 0.12);
+}
+
+/* ── Add color button ────────────────────────────────────────────────────── */
+.add-btn {
+  background: none;
+  border: 1px dashed #3a3a3a;
+  color: #666;
+  border-radius: 8px;
+  padding: 9px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+  text-align: center;
+}
+
+.add-btn:hover {
+  border-color: #7b61ff;
+  color: #9d87ff;
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: #2e2e2e;
+  margin: 16px 0;
+}
+
+/* ── Status ──────────────────────────────────────────────────────────────── */
+.status {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 12px;
+  min-height: 18px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #444;
+  flex-shrink: 0;
+  margin-top: 3px;
+  transition: background 0.2s;
+}
+
+.status-dot.running { background: #7b61ff; animation: pulse 1.2s ease-in-out infinite; }
+.status-dot.done    { background: #4ade80; }
+.status-dot.error   { background: #ff5a5a; }
+
+.status-msg.done  { color: #4ade80; }
+.status-msg.error { color: #ff5a5a; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+/* ── Generate button ─────────────────────────────────────────────────────── */
+.generate-btn {
+  width: 100%;
+  background: #7b61ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  letter-spacing: 0.01em;
+}
+
+.generate-btn:hover:not(:disabled) { background: #6b51ef; }
+
+.generate-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+#parent-folder-section { display: none; }
+
+.section-label-note {
+  color: #444;
+  font-size: 10px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ── Author row ──────────────────────────────────────────────────────────── */
+.author-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 0;
+  border-top: 1px solid #2a2a2a;
+  margin-top: 12px;
+}
+
+.author-label {
+  font-size: 11px;
+  color: #555;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.author-name  { font-size: 12px; color: #c8c8c8; }
+.author-divider { color: #444; font-size: 12px; margin: 0 2px; }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.footer {
+  border-top: 1px solid #2a2a2a;
+  padding: 9px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-brand {
+  font-size: 12px;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.footer-divider { color: #444; font-size: 12px; margin: 0 2px; }
+
+.footer-link {
+  font-size: 12px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.4);
+  transition: color 0.15s;
+}
+.footer-link:hover { color: #fff; }
+
+</style>
+</head>
+<body>
+
+<div class="header">Color Generator</div>
+
+<!-- ── Collection ────────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Collection</div>
+  <div class="select-wrapper">
+    <select id="collection-select" title="Variable collection">
+      <option value="">Select a collection…</option>
+      <option value="__new__">+ Create new collection</option>
+    </select>
+  </div>
+  <div id="new-collection-wrap">
+    <input type="text" id="new-collection-name" placeholder="New collection name…" />
+  </div>
+</div>
+
+<!-- ── Parent folder (optional) ──────────────────────────────────────────── -->
+<div class="section" id="parent-folder-section">
+  <div class="section-label">Inside folder <span class="section-label-note">(optional)</span></div>
+  <div class="select-wrapper">
+    <select id="parent-folder-select" title="Parent folder">
+      <option value="">Root (no parent folder)</option>
+    </select>
+  </div>
+</div>
+
+<!-- ── Colors ────────────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Colors</div>
+  <div class="entries" id="entries"></div>
+  <button class="add-btn" id="add-btn">+ Add color</button>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Footer ────────────────────────────────────────────────────────────── -->
+<div class="status" id="status-row">
+  <div class="status-dot" id="status-dot"></div>
+  <span class="status-msg" id="status-msg">Ready</span>
+</div>
+<button class="generate-btn" id="generate-btn" disabled>Generate</button>
+
+<!-- ── Author row ────────────────────────────────────────────────────────── -->
+<div class="author-row">
+  <span class="author-label">Author:</span>
+  <span class="author-name">Daniel Fransix</span>
+  <span class="author-divider">|</span>
+  <span class="footer-link" id="x-link">x.com/danielfransix</span>
+</div>
+
+<!-- ── Footer ────────────────────────────────────────────────────────────── -->
+<div class="footer">
+  <span class="footer-brand">Color Generator</span>
+  <span class="footer-divider">|</span>
+  <span class="footer-link" id="coffee-link">☕ Buy me a coffee</span>
+</div>
+
+<script>
+
+// ── State ─────────────────────────────────────────────────────────────────────
+
+var running = false;
+
+// entries: array of { hex: string (6-digit, no #), name: string }
+var entries = [{ hex: '', name: '' }];
+
+// ── DOM refs ──────────────────────────────────────────────────────────────────
+
+var collectionSelect    = document.getElementById('collection-select');
+var newCollectionWrap   = document.getElementById('new-collection-wrap');
+var newCollectionInput  = document.getElementById('new-collection-name');
+var parentFolderSection = document.getElementById('parent-folder-section');
+var parentFolderSelect  = document.getElementById('parent-folder-select');
+var entriesEl           = document.getElementById('entries');
+var addBtn              = document.getElementById('add-btn');
+var generateBtn         = document.getElementById('generate-btn');
+var statusDot           = document.getElementById('status-dot');
+var statusMsg           = document.getElementById('status-msg');
+
+// ── Collection dropdown ───────────────────────────────────────────────────────
+
+collectionSelect.addEventListener('change', function() {
+  var isNew = this.value === '__new__';
+  newCollectionWrap.style.display = isNew ? 'block' : 'none';
+  // Hide parent folder section and clear any stale selection
+  parentFolderSection.style.display = 'none';
+  parentFolderSelect.selectedIndex = 0;
+  if (this.value && !isNew) {
+    parent.postMessage({ pluginMessage: { type: 'get_folders', collectionId: this.value } }, '*');
+  }
+  validate();
+  scheduleResize();
+});
+
+newCollectionInput.addEventListener('input', function() {
+  if (this.value.trim()) this.classList.remove('error');
+  validate();
+});
+
+// ── Entry management ──────────────────────────────────────────────────────────
+
+function addEntry() {
+  entries.push({ hex: '', name: '' });
+  renderEntries();
+  validate();
+  scheduleResize();
+}
+
+function removeEntry(index) {
+  entries.splice(index, 1);
+  renderEntries();
+  validate();
+  scheduleResize();
+}
+
+function renderEntries() {
+  entriesEl.innerHTML = '';
+  var canRemove = entries.length > 1;
+
+  entries.forEach(function(entry, i) {
+    var row = document.createElement('div');
+    row.className = 'entry-row';
+
+    // ── Color preview swatch with hidden native color picker ──
+    var preview = document.createElement('div');
+    preview.className = 'color-preview';
+    if (entry.hex && isValidHex(entry.hex)) {
+      preview.style.background = '#' + expandHex(entry.hex);
+    }
+
+    var picker = document.createElement('input');
+    picker.type = 'color';
+    picker.value = (entry.hex && isValidHex(entry.hex))
+      ? '#' + expandHex(entry.hex).toLowerCase()
+      : '#000000';
+
+    picker.addEventListener('input', function() {
+      // picker gives #rrggbb (lowercase 6-digit)
+      var raw = this.value.slice(1).toUpperCase();
+      entries[i].hex = raw;
+      preview.style.background = this.value;
+      var hexEl = row.querySelector('.hex-input');
+      hexEl.value = raw;
+      hexEl.classList.remove('error');
+      validate();
+    });
+
+    preview.appendChild(picker);
+    row.appendChild(preview);
+
+    // ── Hex input ──
+    var hexInput = document.createElement('input');
+    hexInput.type = 'text';
+    hexInput.className = 'hex-input';
+    hexInput.placeholder = 'e.g. 7655FD';
+    hexInput.maxLength = 7; // handle people typing # prefix
+    hexInput.value = entry.hex ? entry.hex.toUpperCase() : '';
+
+    hexInput.addEventListener('input', function() {
+      var raw = this.value.replace(/^#/, '').toUpperCase();
+      entries[i].hex = raw;
+      if (isValidHex(raw)) {
+        this.classList.remove('error');
+        var norm = '#' + expandHex(raw).toLowerCase();
+        preview.style.background = norm;
+        picker.value = norm;
+      } else {
+        preview.style.background = '';
+        preview.style.background = '#3a3a3a';
+      }
+      validate();
+    });
+
+    hexInput.addEventListener('blur', function() {
+      var raw = entries[i].hex;
+      if (raw && !isValidHex(raw)) this.classList.add('error');
+    });
+
+    row.appendChild(hexInput);
+
+    // ── Folder name input ──
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'name-input';
+    nameInput.placeholder = 'Folder name';
+    nameInput.value = entry.name || '';
+
+    nameInput.addEventListener('input', function() {
+      entries[i].name = this.value;
+      if (this.value.trim()) this.classList.remove('error');
+      validate();
+    });
+
+    row.appendChild(nameInput);
+
+    // ── Remove button ──
+    var removeButton = document.createElement('button');
+    removeButton.className = 'remove-btn';
+    removeButton.title = 'Remove';
+    removeButton.innerHTML = '&times;';
+    removeButton.style.display = canRemove ? '' : 'none';
+    removeButton.addEventListener('click', function() { removeEntry(i); });
+    row.appendChild(removeButton);
+
+    entriesEl.appendChild(row);
+  });
+}
+
+addBtn.addEventListener('click', addEntry);
+
+// ── Validation ────────────────────────────────────────────────────────────────
+
+function isValidHex(hex) {
+  var clean = hex.replace(/^#/, '');
+  return /^[0-9A-Fa-f]{3}$/.test(clean) || /^[0-9A-Fa-f]{6}$/.test(clean);
+}
+
+function expandHex(hex) {
+  // Returns 6-digit hex (no #), uppercased
+  var clean = hex.replace(/^#/, '').toUpperCase();
+  if (clean.length === 3) {
+    clean = clean[0]+clean[0] + clean[1]+clean[1] + clean[2]+clean[2];
+  }
+  return clean;
+}
+
+function validate() {
+  if (running) { generateBtn.disabled = true; return; }
+
+  // Collection check
+  var sel = collectionSelect.value;
+  if (!sel) { generateBtn.disabled = true; return; }
+  if (sel === '__new__' && !newCollectionInput.value.trim()) {
+    generateBtn.disabled = true; return;
+  }
+
+  // Entries check
+  for (var i = 0; i < entries.length; i++) {
+    if (!isValidHex(entries[i].hex)) { generateBtn.disabled = true; return; }
+    if (!entries[i].name.trim())      { generateBtn.disabled = true; return; }
+  }
+
+  generateBtn.disabled = false;
+}
+
+// ── Status helpers ────────────────────────────────────────────────────────────
+
+function setStatus(type, text) {
+  statusDot.className  = 'status-dot ' + type;
+  statusMsg.className  = 'status-msg ' + type;
+  statusMsg.textContent = text;
+}
+
+// ── Generate ──────────────────────────────────────────────────────────────────
+
+generateBtn.addEventListener('click', function() {
+  if (running) return;
+  running = true;
+  generateBtn.disabled = true;
+  setStatus('running', 'Starting…');
+
+  var sel = collectionSelect.value;
+
+  var cleanEntries = entries.map(function(e) {
+    return { hex: expandHex(e.hex), name: e.name.trim() };
+  });
+
+  parent.postMessage({
+    pluginMessage: {
+      type:           'generate',
+      collectionId:   sel === '__new__' ? null : sel,
+      collectionName: newCollectionInput.value.trim(),
+      parentFolder:   parentFolderSelect.value,
+      entries:        cleanEntries
+    }
+  }, '*');
+});
+
+// ── Plugin → UI messages ──────────────────────────────────────────────────────
+
+window.onmessage = function(event) {
+  var msg = event.data.pluginMessage;
+  if (!msg) return;
+
+  if (msg.type === 'collections') {
+    // Rebuild options: keep placeholder (0) and "create new" (1), append existing
+    while (collectionSelect.options.length > 2) collectionSelect.remove(2);
+    msg.collections.forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      collectionSelect.appendChild(opt);
+    });
+    return;
+  }
+
+  if (msg.type === 'folders') {
+    // Rebuild parent folder options
+    while (parentFolderSelect.options.length > 1) parentFolderSelect.remove(1);
+    msg.folders.forEach(function(f) {
+      var opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      parentFolderSelect.appendChild(opt);
+    });
+    parentFolderSection.style.display = msg.folders.length > 0 ? 'block' : 'none';
+    scheduleResize();
+    return;
+  }
+
+  if (msg.type === 'progress') {
+    setStatus('running', msg.message + ' (' + msg.current + ' / ' + msg.total + ')');
+    return;
+  }
+
+  if (msg.type === 'done') {
+    running = false;
+    var vStr = msg.variableCount + ' variable' + (msg.variableCount !== 1 ? 's' : '');
+    var fStr = msg.frameCount   + ' swatch frame' + (msg.frameCount !== 1 ? 's' : '');
+    setStatus('done', 'Done — ' + vStr + ' created, ' + fStr + ' added.');
+    validate();
+    return;
+  }
+
+  if (msg.type === 'error') {
+    running = false;
+    setStatus('error', msg.message);
+    validate();
+    return;
+  }
+};
+
+// ── Auto-resize ───────────────────────────────────────────────────────────────
+
+var resizeTimer;
+function scheduleResize() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function() {
+    parent.postMessage({
+      pluginMessage: { type: 'resize', height: document.body.offsetHeight + 24 }
+    }, '*');
+  }, 50);
+}
+
+new ResizeObserver(function() { scheduleResize(); }).observe(document.body);
+
+// ── Footer links ──────────────────────────────────────────────────────────────
+
+document.getElementById('x-link').addEventListener('click', function() {
+  parent.postMessage({ pluginMessage: { type: 'open_url', url: 'https://x.com/danielfransix' } }, '*');
+});
+document.getElementById('coffee-link').addEventListener('click', function() {
+  parent.postMessage({ pluginMessage: { type: 'open_url', url: 'https://danielfransix.short.gy/buy-coffee' } }, '*');
+});
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+
+renderEntries();
+validate();
+scheduleResize();
+
+</script>
+</body>
+</html>
