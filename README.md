@@ -1,0 +1,2 @@
+# figma-color-generator
+
