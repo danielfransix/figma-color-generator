@@ -19,7 +19,13 @@ figma.ui.onmessage = async function(msg) {
     return;
   }
   if (msg.type === 'open_url') {
-    figma.openExternal(msg.url);
+    var allowed = [
+      'https://x.com/danielfransix',
+      'https://danielfransix.short.gy/buy-coffee',
+    ];
+    if (allowed.indexOf(msg.url) !== -1) {
+      figma.openExternal(msg.url);
+    }
     return;
   }
   if (msg.type === 'get_folders') {

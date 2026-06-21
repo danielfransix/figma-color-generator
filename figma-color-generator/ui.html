@@ -6,14 +6,14 @@
 <title>Color Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 
 /* ── Reset & base ────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Cal Sans', sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 13px;
   line-height: 1.4;
   background: #1e1e1e;
@@ -24,6 +24,7 @@ body {
 
 /* ── Typography ──────────────────────────────────────────────────────────── */
 .header {
+  font-family: 'Cal Sans', sans-serif;
   font-size: 15px;
   font-weight: 700;
   color: #ffffff;
@@ -308,6 +309,7 @@ input[type="text"]::placeholder { color: #555; }
 }
 
 .footer-brand {
+  font-family: 'Cal Sans', sans-serif;
   font-size: 12px;
   color: #fff;
   letter-spacing: 0.02em;
@@ -357,7 +359,7 @@ input[type="text"]::placeholder { color: #555; }
 <div class="section">
   <div class="section-label">Colors</div>
   <div class="entries" id="entries"></div>
-  <button class="add-btn" id="add-btn">+ Add color</button>
+  <button type="button" class="add-btn" id="add-btn">+ Add color</button>
 </div>
 
 <div class="divider"></div>
@@ -367,7 +369,7 @@ input[type="text"]::placeholder { color: #555; }
   <div class="status-dot" id="status-dot"></div>
   <span class="status-msg" id="status-msg">Ready</span>
 </div>
-<button class="generate-btn" id="generate-btn" disabled>Generate</button>
+<button type="button" class="generate-btn" id="generate-btn" disabled>Generate</button>
 
 <!-- ── Author row ────────────────────────────────────────────────────────── -->
 <div class="author-row">
